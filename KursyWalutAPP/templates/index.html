@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.plot.ly/plotly-2.20.0.min.js"></script>
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+
+</head>
+    {% block styles %}
+    <!-- Load Bootstrap-Flask CSS here -->
+    {{ bootstrap.load_css() }}
+    {% endblock %}
+
+    {% from "bootstrap5/form.html" import render_form, render_field %}
+
+<body>
+
+    <!-- Load Bootstrap-Flask js -->
+    {{ bootstrap.load_js() }}
+
+    <div class="container">
+        <div class="d-flex justify-content-center align-items-center">
+           <h1>Kursy Walut</h1>
+        </div>
+
+                            <!-- Przyciski typu radio do zmiany rodzaju kursu-->
+
+        <div class="d-flex justify-content-center">
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+              <label class="btn">
+                <input type="radio" name="options" id="mid" onclick="updateChartAndRate()" checked> Kurs średni
+              </label>
+              <label class="btn">
+                <input type="radio" name="options" id="bid" onclick="updateChartAndRate()"> Kupno
+              </label>
+              <label class="btn">
+                <input type="radio" name="options" id="ask" onclick="updateChartAndRate()"> Sprzedaź
+              </label>
+            </div>
+        </div>
+
+                            <!-- Pola dla indeksów oraz wartości walut-->
+
+            {{ form.hidden_tag() }}
+            <div class="container">
+                <form method="post">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="row">
+                                {{ render_field(form.firstCurrIndex, class="form-control") }}
+                            </div>
+                            <div class="row">
+                                {{ render_field(form.firstCurr, class="form-control", type="number", min="0", step="0.01", onchange="updateRate()") }}
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="row">
+                                {{ render_field(form.secondCurrIndex, class_="form-select", id="secondCurrIndex", onchange="updateChartAndRate()") }}
+                            </div>
+                            <div class="row">
+                                {{ render_field(form.secondCurr, class_="form-control", id="secondCurr", type="number", min="0", step="0.01", onchange="updateRatePLN()") }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pole dla zakresu dat do generowania wykresu-->
+
+                    <div class="container mt-4">
+                        <div class="row d-flex align-items-center justify-content-between">
+                            <!-- Formularz wyboru zakresu dat -->
+                            <div class="col-md-5">
+                                <form method="POST">
+                                    <label for="dateRange" class="form-label">Wybierz zakres dat:</label>
+                                    <input type="text" id="dateRange" name="dateRange" class="form-control" disabled>
+                                </form>
+                            </div>
+
+                            <!-- Przyciski typu radio do zmiany zakresu dat-->
+
+                            <div class="col-md-1 d-flex align-items-end align-self-stretch">
+                                <input type="radio" class="btn-check" name="radio-range" id="own" value=0 onclick="updateChart()">
+                                <label class="btn btn-outline-dark" for="own">Własny zakres</label>
+                            </div>
+                            <div class="col-md-1 d-flex align-items-end align-self-stretch">
+                                <input type="radio" class="btn-check" name="radio-range" id="days7" value=7 onclick="updateChart()">
+                                <label class="btn btn-outline-dark" for="days7">7 dni</label>
+                            </div>
+                            <div class="col-md-1 d-flex align-items-end align-self-stretch">
+                                <input type="radio" class="btn-check" name="radio-range" id="days30" value=30 onclick="updateChart()">
+                                <label class="btn btn-outline-dark" for="days30">30 dni</label>
+                            </div>
+                            <div class="col-md-1 d-flex align-items-end align-self-stretch" >
+                                <input type="radio" class="btn-check col-md-2" name="radio-range" id="days90" value=90 onclick="updateChart()" checked>
+                                <label class="btn btn-outline-dark" for="days90">90 dni</label>
+                            </div>
+                            <div class="col-md-1 d-flex align-items-end align-self-stretch">
+                                <input type="radio" class="btn-check" name="radio-range" id="1y" value=365 onclick="updateChart()">
+                                <label class="btn btn-outline-dark" for="1y">1y</label>
+                            </div>
+                            <div class="col-md-1 d-flex align-items-end align-self-stretch">
+                                <input type="radio" class="btn-check" name="radio-range" id="5y" value=1825 onclick="updateChart()">
+                                <label class="btn btn-outline-dark" for="5y">5y</label>
+                            </div>
+                            <div class="col-md-1 d-flex align-items-end align-self-stretch" >
+                                <input type="radio" class="btn-check col-md-2" name="radio-range" id="max" value="max" onclick="updateChart()">
+                                <label class="btn btn-outline-dark" for="max">MAX</label>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+    </div>
+
+
+    <!-- Wykres -->
+
+    <div id="chart-container">
+        {{ plot_html|safe }}
+    </div>
+
+    <footer>
+        <div>
+            <p class="text-center text-body-secondary">© <span id="year"></span> Inc</p>
+
+        </div>
+
+    </footer>
+</body>
+
+<script>
+
+    // Wczytywanie z backendu dat do zakresu początkowego (90 dni) przy uruchomieniu aplikacji
+
+    const dateRange = {
+        startDate: "{{ dates.startDate }}",
+        endDate: "{{ dates.endDate }}"
+    };
+
+</script>
+
+</html>

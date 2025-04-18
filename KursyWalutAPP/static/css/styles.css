@@ -1,0 +1,59 @@
+/* styles.css */
+
+/* Globalne style dla strony */
+body {
+  background-color: #f7f7f7; /* Jasnoszare tło, nawiązujące do stylu ggplot2 */
+  color: #333333;          /* Ciemny tekst dla kontrastu */
+  font-family: "Georgia", serif;  /* Klasyczny, elegancki font */
+  margin: 0;
+  padding: 20px;
+}
+
+/* Nagłówki */
+h1, h2, h3, h4, h5, h6 {
+  color: #333333;
+  text-align: center;
+  margin-top: 0;
+}
+
+/* Kontener na wykresy, dostosowany do 1600x800 */
+#chart-container {
+  background-color: #ffffff;     /* Białe tło wykresu */
+  border: 1px solid #d9d9d9;     /* Delikatna ramka */
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);  /* Subtelny cień */
+  padding: 20px;
+  margin: 20px auto;
+  width: 1600px;  /* Ustawienie szerokości wykresu */
+  height: 800px;  /* Ustawienie wysokości wykresu */
+  overflow: hidden; /* Zapobiega powiększaniu */
+}
+
+/* Przykładowe style dla formularzy lub przycisków */
+button, .btn {
+  background-color: #2a9d8f;  /* Zielony akcent, który może korespondować z Twoimi wykresami */
+  color: #ffffff;
+  border: none;
+  padding: 10px 16px;
+  margin: 5px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+button:hover, .btn:hover {
+  background-color: #21867a;
+}
+
+/* Zapewnienie responsywności dla ekranów mobilnych */
+@media (max-width: 1800px) {
+  #chart-container {
+    width: 100%; /* Dopasowanie do mniejszych ekranów */
+    max-width: 1600px;
+  }
+}
+
+.btn-group1 label {
+    width: 80px; /* Stała szerokość przycisków dla równomiernego układu */
+    text-align: center;
+}
